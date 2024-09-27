@@ -1,18 +1,18 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 class AlbumBase(BaseModel):
     title: str
     artist: str
     genre: str | None = None
-    release_yea: int | None = None
+    release_year: int | None = None
     
 class AlbumCreate(AlbumBase):
     pass
 
-
-class AlbumRead(AlbumBase):
+class AlbumRead(BaseModel):
     id: int
-    
-    class Config:
-        orm_mode = True
-        
+    title: str
+    artist: str
+    release_year: int
+
+    model_config = ConfigDict(from_attributes=True)
