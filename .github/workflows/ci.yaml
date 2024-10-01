@@ -1,6 +1,7 @@
 name: CI pipeline for AlbumRate project
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
