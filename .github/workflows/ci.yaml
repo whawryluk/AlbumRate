@@ -10,10 +10,10 @@ jobs:
   # unit tests and integration tests
   test_microservices:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service: [album_service]
-        python-version: ['3.10', '3.11']
+      strategy:
+        matrix:
+          service: [album_service]
+          python-version: ['3.10', '3.11']
   
     services:
       postgres:
