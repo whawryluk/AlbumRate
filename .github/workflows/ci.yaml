@@ -1,13 +1,14 @@
 name: CI pipeline for AlbumRate project
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
 
 jobs:
   # unit tests and integration tests
-  test-microservices:
+  test_microservices:
     runs-on: ubuntu-latest
     strategy:
       matrix:
