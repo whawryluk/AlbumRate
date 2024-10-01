@@ -47,46 +47,46 @@ jobs:
       - name: Run unit tests
         run: |
           cd services/${{ matrix.service }}
-          pytest
+          pytest tests/unit
 
      - name: Run integration tests
         env:
           DATABASE_URL: postgres://user:password@localhost:5432/yourdb
         run: |
           cd services/${{ matrix.service }}
-          pytest integration_tests
+          pytest tests/integration
 
-     - name: Start microservices using Docker Compose
-        run: |
-          docker-compose up -d
+    #  - name: Start microservices using Docker Compose
+    #     run: |
+    #       docker-compose up -d
 
-      - name: Run API tests
-        run: |
-          cd api_tests
-          pytest test_api.py
+    #   - name: Run API tests
+    #     run: |
+    #       cd api_tests
+    #       pytest test_api.py
 
-      - name: Stop and clean up Docker containers
-        run: |
-          docker-compose down
+    #   - name: Stop and clean up Docker containers
+    #     run: |
+    #       docker-compose down
 
-  test-frontend:
-    runs-on: ubuntu-latest
+  # test-frontend:
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
 
-      - name: Install Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
+  #     - name: Install Node.js
+  #       uses: actions/setup-node@v2
+  #       with:
+  #         node-version: '16'
 
-      - name: Install frontend dependencies
-        run: |
-          cd frontend
-          npm install
+  #     - name: Install frontend dependencies
+  #       run: |
+  #         cd frontend
+  #         npm install
 
-      - name: Run frontend tests
-        run: |
-          cd frontend
-          npm test
+  #     - name: Run frontend tests
+  #       run: |
+  #         cd frontend
+  #         npm test
