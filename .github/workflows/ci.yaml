@@ -11,21 +11,6 @@ on:
         options:
           - '3.10'
           - '3.11'
-      db-user:
-        description: 'Database user'
-        required: true
-        default: 'youruser'
-        type: string
-      db-password:
-        description: 'Database password'
-        required: true
-        default: 'yourpassword'
-        type: string
-      db-name:
-        description: 'Database name'
-        required: true
-        default: 'yourdb'
-        type: string
 
   push:
     branches:
@@ -63,11 +48,11 @@ jobs:
       postgres:
         image: postgres:13
         env:
-          POSTGRES_USER: ${{ github.event.inputs.db-user || 'youruser' }}
-          POSTGRES_PASSWORD: ${{ github.event.inputs.db-password || 'yourpassword' }}
-          POSTGRES_DB: ${{ github.event.inputs.db-name || 'yourdb' }}
+          POSTGRES_USER: ${{ secrets.DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.DB_NAME }}
         options: >-
-          --health-cmd="pg_isready -U ${{ github.event.inputs.db-user || 'youruser' }}"
+          --health-cmd="pg_isready -U ${{ secrets.DB_USER }}"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
@@ -77,7 +62,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -88,10 +73,10 @@ jobs:
           cd services/album_service
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          
+
       - name: Run integration tests
         env:
-          DATABASE_URL: postgres://${{ github.event.inputs.db-user || 'youruser' }}:${{ github.event.inputs.db-password || 'yourpassword' }}@postgres:5432/${{ github.event.inputs.db-name || 'yourdb' }}
+          DATABASE_URL: postgresql+asyncpg://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@postgres:5432/${{ secrets.DB_NAME }}
         run: |
           cd services/album_service
           pytest tests/integration
