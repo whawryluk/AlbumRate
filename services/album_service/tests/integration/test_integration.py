@@ -1,6 +1,11 @@
 import pytest
 from httpx import AsyncClient, ASGITransport
-from app.main import app  # Ensure DATABASE_URL is set before this import
+import os
+
+# Ensure DATABASE_URL is set before importing the app
+assert os.getenv("DATABASE_URL") is not None, "DATABASE_URL is not set for integration tests"
+
+from app.main import app
 
 @pytest.mark.asyncio
 async def test_create_album():

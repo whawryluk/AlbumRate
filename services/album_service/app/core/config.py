@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str  # No default value, making it required
 
     model_config = SettingsConfigDict(
-        env_prefix='',
+        env_prefix='',  # No prefix
         env_file=None,  # No env file since we're not using python-dotenv
     )
 
