@@ -29,7 +29,7 @@ on:
 
   push:
     branches:
-      - main
+      - '*'
 
 jobs:
   # Unit tests
