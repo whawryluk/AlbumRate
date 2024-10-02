@@ -15,4 +15,4 @@ class AlbumRead(BaseModel):
     artist: str
     release_year: int
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, strict=True)

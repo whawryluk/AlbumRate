@@ -42,7 +42,7 @@ def test_album_read_schema_orm_mode():
                        title="Test Album",
                        artist="Test Artist",
                        release_year=2023)
-    album_read = AlbumRead.from_orm(album_data)
+    album_read = AlbumRead.model_validate(album_data)
     assert album_read.id == 1
     assert album_read.title == "Test Album"
     assert album_read.artist == "Test Artist"
@@ -54,4 +54,4 @@ def test_album_read_schema_orm_mode_invalid_types():
                            title="Invalid Album",
                            artist="Invalid Artist",
                            release_year="invalid_year")
-        AlbumRead.from_orm(album_data)
+        AlbumRead.model_validate(album_data)
