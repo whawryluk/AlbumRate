@@ -1,5 +1,7 @@
+# services/album_service/app/core/config.py
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import ValidationError, validator
+from pydantic import ValidationError, field_validator
 import sys
 
 class Settings(BaseSettings):
@@ -10,7 +12,7 @@ class Settings(BaseSettings):
         env_file=None,  # No env file since we're not using python-dotenv
     )
 
-    @validator('DATABASE_URL')
+    @field_validator('DATABASE_URL')
     def check_database_url(cls, v):
         if not v.startswith("postgresql+asyncpg://"):
             raise ValueError("DATABASE_URL must start with 'postgresql+asyncpg://'")
