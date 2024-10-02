@@ -2,28 +2,72 @@ name: CI pipeline for AlbumRate project
 
 on:
   workflow_dispatch:
+    inputs:
+      python-version:
+        description: 'Python version to use'
+        required: true
+        default: '3.10'
+        type: choice
+        options:
+          - '3.10'
+          - '3.11'
+      db-user:
+        description: 'Database user'
+        required: true
+        default: 'youruser'
+        type: string
+      db-password:
+        description: 'Database password'
+        required: true
+        default: 'yourpassword'
+        type: string
+      db-name:
+        description: 'Database name'
+        required: true
+        default: 'yourdb'
+        type: string
+
   push:
     branches:
       - main
 
 jobs:
-  # unit tests and integration tests
-  test_microservices:
+  # Unit tests
+  test_unit:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service: [album_service]
-        python-version: ['3.10', '3.11']
-  
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ github.event.inputs.python-version }}
+      
+      - name: Install dependencies
+        run: |
+          cd services/album_service
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      - name: Run unit tests
+        run: |
+          cd services/album_service
+          pytest tests/unit
+
+  # Integration tests
+  test_integration:
+    runs-on: ubuntu-latest
+    needs: test_unit
     services:
       postgres:
         image: postgres:13
         env:
-          POSTGRES_USER: youruser
-          POSTGRES_PASSWORD: yourpassword
-          POSTGRES_DB: yourdb
+          POSTGRES_USER: ${{ github.event.inputs.db-user }}
+          POSTGRES_PASSWORD: ${{ github.event.inputs.db-password }}
+          POSTGRES_DB: ${{ github.event.inputs.db-name }}
         options: >-
-          --health-cmd="pg_isready -U youruser"
+          --health-cmd="pg_isready -U ${{ github.event.inputs.db-user }}"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
@@ -37,26 +81,22 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
-      
+          python-version: ${{ github.event.inputs.python-version }}
+
       - name: Install dependencies
         run: |
-          cd services/${{ matrix.service }}
+          cd services/album_service
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           
-      - name: Run unit tests
-        run: |
-          cd services/${{ matrix.service }}
-          pytest tests/unit
-          
       - name: Run integration tests
         env:
-          DATABASE_URL: postgres://youruser:yourpassword@postgres:5432/yourdb
+          DATABASE_URL: postgres://${{ github.event.inputs.db-user }}:${{ github.event.inputs.db-password }}@postgres:5432/${{ github.event.inputs.db-name }}
         run: |
-          cd services/${{ matrix.service }}
+          cd services/album_service
           pytest tests/integration
 
+  # Uncomment this section for frontend tests if needed
   # test-frontend:
   #   runs-on: ubuntu-latest
   #
