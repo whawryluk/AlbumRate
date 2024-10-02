@@ -60,6 +60,15 @@ jobs:
           - 5432:5432
 
     steps:
+      - name: Validate DATABASE_URL
+        run: |
+          echo "Validating DATABASE_URL..."
+          if [[ $DATABASE_URL != postgresql+asyncpg://* ]]; then
+            echo "DATABASE_URL has an incorrect dialect."
+            exit 1
+          fi
+          echo "DATABASE_URL is correctly set."
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
