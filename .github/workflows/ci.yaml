@@ -42,7 +42,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ github.event.inputs.python-version }}
+          python-version: ${{ github.event.inputs.python-version || '3.10' }}
       
       - name: Install dependencies
         run: |
@@ -63,11 +63,11 @@ jobs:
       postgres:
         image: postgres:13
         env:
-          POSTGRES_USER: ${{ github.event.inputs.db-user }}
-          POSTGRES_PASSWORD: ${{ github.event.inputs.db-password }}
-          POSTGRES_DB: ${{ github.event.inputs.db-name }}
+          POSTGRES_USER: ${{ github.event.inputs.db-user || 'youruser' }}
+          POSTGRES_PASSWORD: ${{ github.event.inputs.db-password || 'yourpassword' }}
+          POSTGRES_DB: ${{ github.event.inputs.db-name || 'yourdb' }}
         options: >-
-          --health-cmd="pg_isready -U ${{ github.event.inputs.db-user }}"
+          --health-cmd="pg_isready -U ${{ github.event.inputs.db-user || 'youruser' }}"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
@@ -81,7 +81,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ github.event.inputs.python-version }}
+          python-version: ${{ github.event.inputs.python-version || '3.10' }}
 
       - name: Install dependencies
         run: |
@@ -91,7 +91,7 @@ jobs:
           
       - name: Run integration tests
         env:
-          DATABASE_URL: postgres://${{ github.event.inputs.db-user }}:${{ github.event.inputs.db-password }}@postgres:5432/${{ github.event.inputs.db-name }}
+          DATABASE_URL: postgres://${{ github.event.inputs.db-user || 'youruser' }}:${{ github.event.inputs.db-password || 'yourpassword' }}@postgres:5432/${{ github.event.inputs.db-name || 'yourdb' }}
         run: |
           cd services/album_service
           pytest tests/integration
