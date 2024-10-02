@@ -1,0 +1,80 @@
+name: CI pipeline for AlbumRate project
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - '*'
+
+jobs:
+  # unit tests and integration tests
+  test_microservices:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [album_service]
+        python-version: ['3.10', '3.11']
+  
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: youruser
+          POSTGRES_PASSWORD: yourpassword
+          POSTGRES_DB: yourdb
+        options: >-
+          --health-cmd="pg_isready -U youruser"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      
+      - name: Install dependencies
+        run: |
+          cd services/${{ matrix.service }}
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      - name: Run unit tests
+        run: |
+          cd services/${{ matrix.service }}
+          pytest tests/unit
+          
+#      - name: Run integration tests
+#        env:
+#          DATABASE_URL: postgres://youruser:yourpassword@postgres:5432/yourdb
+#        run: |
+#          cd services/${{ matrix.service }}
+#          pytest tests/integration
+
+  # test-frontend:
+  #   runs-on: ubuntu-latest
+  #
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Install Node.js
+  #       uses: actions/setup-node@v2
+  #       with:
+  #         node-version: '16'
+  #
+  #     - name: Install frontend dependencies
+  #       run: |
+  #         cd frontend
+  #         npm install
+  #
+  #     - name: Run frontend tests
+  #       run: |
+  #         cd frontend
+  #         npm test
