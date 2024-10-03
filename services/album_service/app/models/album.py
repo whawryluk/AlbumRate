@@ -9,3 +9,4 @@ class Album(Base):
     artist = Column(String, index=True, nullable=False)
     genre = Column(String, index=True)
     release_year = Column(Integer)
+    description = Column(String, nullable=True)

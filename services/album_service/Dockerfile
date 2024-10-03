@@ -1,18 +1,26 @@
-# Use an official Python runtime as a parent image
-FROM --platform=linux/amd64 python:3.10-slim
+FROM python:3.10-slim
 
-# Set the working directory
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    netcat-openbsd \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
-# Copy requirements.txt and install dependencies
 COPY ./requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application code
-COPY . .
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
 
-# Expose port 8000
-EXPOSE 8000
+COPY ./app /app/app
 
-# Define the command to run your app
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+COPY ./alembic /app/alembic
+
+COPY ./entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+ENTRYPOINT ["/app/entrypoint.sh"]

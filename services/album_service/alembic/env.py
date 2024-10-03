@@ -10,6 +10,8 @@ from alembic import context
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'app'))
 
 from app.database.base import Base
+from app.models.album import Album
+
 from app.core.config import settings
 
 config = context.config

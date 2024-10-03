@@ -8,16 +8,16 @@ services:
     environment:
       POSTGRES_USER: youruser
       POSTGRES_PASSWORD: yourpassword
-      POSTGRES_DB: yourdb
+      POSTGRES_DB: album_db
     ports:
       - "5432:5432"
 
   backend:
-    build: ./services/album_service/app
+    build: ./services/album_service
     volumes:
       - ./services/album_service:/app
     environment:
-      DATABASE_URL: postgresql+asyncpg://user:password@db:5432/album_db
+      DATABASE_URL: postgresql+asyncpg://youruser:yourpassword@db:5432/album_db
     ports:
       - "8000:8000"
     depends_on:
